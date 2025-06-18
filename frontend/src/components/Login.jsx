@@ -92,7 +92,7 @@ const Login = () => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
+            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none"
           />
           {errors.email && <p className="text-sm text-red-500 mb-2">{errors.email}</p>}
 
@@ -102,20 +102,20 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="Password"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
+            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none"
           />
           {errors.password && <p className="text-sm text-red-500 mb-2">{errors.password}</p>}
 
           {apiError && <p className="text-sm text-red-600 mb-4">{apiError}</p>}
 
-          <button type="submit" className="w-full py-3 bg-[#5E3A3A] text-white rounded-md hover:bg-[#D8A7B1] transition font-semibold">
+          <button type="submit" className="w-full py-3 bg-[#D8A7B1] text-white rounded-md hover:bg-pinko transition font-semibold">
             Log in
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-[#5E3A3A]">
+        <p className="mt-4 text-center text-sm text-pinko">
           Don’t have an account?{' '}
-          <a href="/registre" className="text-[#D8A7B1] underline hover:text-[#5E3A3A]">
+          <a href="/registre" className="text-[#D8A7B1] underline hover:text-pinko">
             Sign up
           </a>
         </p>

@@ -1,9 +1,12 @@
-import React from 'react'
+import { useAuth } from "../provider/AuthProvider";
 
-function Profile() {
+const Profile = () => {
+  const { token } = useAuth();
+  console.log("Current token:", token);
+
   return (
-    <div>Profile</div>
-  )
-}
+    <div className="p-4 text-xl">Welcome to your profile!</div>
+  );
+};
 
-export default Profile
+export default Profile;

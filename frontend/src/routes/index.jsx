@@ -6,7 +6,6 @@ import RedirectIfAuth from "./RedirectIfAuth";
 import Home from "../components/home";
 import RegistreForm from "../components/Registre";
 import Profile from "../components/Profile";
-
 import LoginForm from "../components/Login";
 
 const Routes = () => {
@@ -16,17 +15,19 @@ const Routes = () => {
     // Root redirect based on auth
     {
       path: "/",
-      element: token ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />,
+      element: token ? <Navigate to="/profile" replace /> : <Navigate to="/home" replace />,
     },
 
-    // Protected Routes (only accessible if authenticated)
+    // Public route accessible to everyone (even if logged in)
+    {
+      path: "/home",
+      element: <Home />,
+    },
+
+    // Protected Routes (only if authenticated)
     {
       element: <ProtectedRoute />,
       children: [
-        {
-          path: "/home",
-          element: <Home />,
-        },
         {
           path: "/profile",
           element: <Profile />,
@@ -34,7 +35,7 @@ const Routes = () => {
       ],
     },
 
-    // Public Routes (only accessible if NOT authenticated)
+    // Routes only accessible if NOT authenticated
     {
       element: <RedirectIfAuth />,
       children: [
@@ -49,7 +50,7 @@ const Routes = () => {
       ],
     },
 
-    // (404)
+    // 404 page
     {
       path: "*",
       element: (

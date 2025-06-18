@@ -1,10 +1,21 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../provider/AuthProvider';
+// import { Navigate, Outlet } from 'react-router-dom';
+// import { useAuth } from '../provider/AuthProvider';
+
+// const RedirectIfAuth = () => {
+//   const { token } = useAuth();
+
+//   return token ? <Navigate to="/profile" /> : <Outlet />;
+// };
+
+// export default RedirectIfAuth;
+
+
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../provider/AuthProvider";
 
 const RedirectIfAuth = () => {
   const { token } = useAuth();
-
-  return token ? <Navigate to="/home" /> : <Outlet />;
+  return token ? <Navigate to="/profile" replace /> : <Outlet />;
 };
 
 export default RedirectIfAuth;

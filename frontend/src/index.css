@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ghos: #D8A7B1;
+  --color-pinko: #5E3A3A;
+}
+
 
 
 /* :root {

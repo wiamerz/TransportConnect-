@@ -1,109 +1,180 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import "../index.css";
-import { useAuth } from '../provider/AuthProvider';
-import { useNavigate } from 'react-router-dom';
+import pic from '../assets/transport.jpg';
+import pic1 from '../assets/trans.jpg';
+import pic2 from '../assets/trs.jpg';
+import pic3 from '../assets/merc.jpg';
+import pic4 from '../assets/sent.jpg';
+import pic5 from '../assets/send.jpg';
+import pic6 from '../assets/sender.jpg';
+import { Truck, MapPin, DollarSign } from 'lucide-react';
 
-const home = () => {
-  const { setToken } = useAuth();
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Récupération des données utilisateur depuis le localStorage
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      try {
-        const userData = JSON.parse(userString);
-        setUser(userData);
-      } catch (e) {
-        console.error("Erreur lors de la récupération des données utilisateur:", e);
-      }
-    }
-    setLoading(false);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setToken(null);
-    navigate("/");
-  };
-
-  const goToAbout = () => {
-    navigate('/profile');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[rgb(108,88,76)]">
-        <p className="text-[rgb(246,233,215)] text-xl">Chargement...</p>
-      </div>
-    );
-  }
-
+const HomePage = () => {
   return (
     <>
-      <Navbar />
-      <main className="min-h-[70vh] flex flex-col justify-center items-center text-[rgb(246,233,215)] px-4 py-10">
-        <div className="bg-[rgb(108,88,76)] text-[rgb(215,195,183)] p-10 rounded-lg shadow-2xl text-center max-w-xl w-full">
-          <h2 className="text-4xl font-bold mb-4">Bienvenue {user?.username || ""}👋</h2>
-          <p className="text-lg mb-6">Ceci est votre espace personnel.</p>
-          
-          {user?.role === 'admin' ? (
-            <div className="bg-[rgb(246,233,215)] text-black p-6 rounded mb-6">
-              <h3 className="text-2xl font-semibold mb-4">Page Admin</h3>
-              <p className="mb-4">Vous êtes connecté en tant qu'administrateur.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[rgb(161,193,129)] p-4 rounded text-white">
-                  <h4 className="font-bold">Gestion des utilisateurs</h4>
-                  <p>Gérer les comptes utilisateurs</p>
-                </div>
-                <div className="bg-[rgb(161,193,129)] p-4 rounded text-white">
-                  <h4 className="font-bold">Tableau de bord</h4>
-                  <p>Voir les statistiques</p>
-                </div>
-                <div className="bg-[rgb(161,193,129)] p-4 rounded text-white">
-                  <h4 className="font-bold">Configuration</h4>
-                  <p>Modifier les paramètres</p>
-                </div>
-                <div className="bg-[rgb(161,193,129)] p-4 rounded text-white">
-                  <h4 className="font-bold">Logs</h4>
-                  <p>Consulter les journaux</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-[rgb(246,233,215)] text-black p-6 rounded mb-6">
-              <h3 className="text-2xl font-semibold mb-4">Espace Utilisateur</h3>
-              <p className="mb-4">Vous êtes connecté en tant qu'utilisateur standard.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button className="bg-[rgb(161,193,129)] hover:bg-[rgb(164,203,125)] p-4 rounded text-white"
-                onClick={goToAbout}>
-                  <h4 className="font-bold">Mon profil</h4>
-                  <p>Modifier vos informations</p>
-                </button>
-                <div className="bg-[rgb(161,193,129)] p-4 rounded text-white">
-                  <h4 className="font-bold">Mes préférences</h4>
-                  <p>Gérer vos paramètres</p>
-                </div>
-              </div>
-            </div>
-          )}
+    <Navbar/>
+    <div className="bg-white text-white font-sans">
 
-          <button
-            onClick={handleLogout}
-            className="mt-4 bg-[rgb(161,193,129)] hover:bg-[rgb(118,189,47)] text-white font-semibold py-2 px-6 rounded transition duration-200"
-          >
-            Se déconnecter
-          </button>
+      {/* Header Section */}
+      <header  style={{ backgroundImage: `url(${pic})`, backgroundSize: 'cover', backgroundPosition: 'center',}} className=" py-12 px-6 text-center shadow-md">
+        <div  className="max-w-4xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-4">
+            Find the perfect load for your truck
+          </h1>
+          <p className="text-white mb-6">
+            StayFreight simplifies load sourcing, booking, and delivery with real-time access to shipments.
+          </p>
+          <div className="flex justify-center">
+            <input
+              type="text"
+              placeholder="Search for loads"
+              className="px-4 py-2 bg-white border text-gray-500 border-gray-300 rounded-l-md focus:outline-none"
+            />
+            <button className="bg-primary bg-ghos text-gray-500 px-6 py-2 rounded-r-md hover:bg-accent transition">
+              Search
+            </button>
+          </div>
         </div>
-      </main>
-      <Footer />
+      </header>
+
+      {/* How it works */}
+    <section id='How' className="py-12 px-6 bg-primary/10">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold text-black text-accent mb-8">
+          How StayFreight Works
+        </h2>
+        <p className="text-gray-600 mb-8">
+          Our platform simplifies the process of finding and booking loads, ensuring a smooth and 
+          efficient experience for both drivers and senders.
+        </p>
+
+        <div className="grid sm:grid-cols-3 gap-6">
+          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+            <div className="w-full h-40 bg-blue-100 flex items-center justify-center">
+              <Truck className="w-8 h-8 text-blue-600" />
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-accent mb-2">Find Loads</h3>
+              <p className="text-gray-600">Browse available loads based on your location, truck type, and preferred routes.</p>
+            </div>
+          </div>
+
+          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+            <div className="w-full h-40 bg-green-100 flex items-center justify-center">
+              <MapPin className="w-8 h-8 text-green-600" />
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-accent mb-2">Book & Deliver</h3>
+              <p className="text-gray-600">Securely book your chosen load and complete the delivery according to the agreed terms.</p>
+            </div>
+          </div>
+
+          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+            <div className="w-full h-40 bg-yellow-100 flex items-center justify-center">
+              <DollarSign className="w-8 h-8 text-yellow-600" />
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-accent mb-2">Get Paid</h3>
+              <p className="text-gray-600">Receive prompt and secure payments upon successful delivery, with transparent transaction details.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      {/* Benefits for Drivers */}
+      <section className="py-12 px-6 bg-primary/10 bg-rose-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold  text-black text-accent mb-8">Benefits for Drivers</h2>
+          <div className="grid sm:grid-cols-3 gap-6">
+            
+            {/* Card 1 */}
+            <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+              <img src={pic1} alt="Maximize Earnings" className="w-full h-40 object-cover" />
+              <div className="p-4">
+                <h3 className="font-bold text-accent mb-2">Maximize Earnings</h3>
+                <p className="text-gray-600">Access to high-paying loads with quick payouts.</p>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white  text-black rounded-xl shadow-md overflow-hidden">
+              <img src={pic2} alt="Flexible Scheduling" className="w-full h-40 object-cover" />
+              <div className="p-4">
+                <h3 className="font-bold text-accent mb-2">Flexible Scheduling</h3>
+                <p className="text-gray-600">Choose the jobs that work for your timeline.</p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+              <img src={pic3} alt="Reliable Payments" className="w-full h-40 object-cover" />
+              <div className="p-4">
+                <h3 className="font-bold text-accent  mb-2">Reliable Payments</h3>
+                <p className="text-gray-600">No delays—get paid on time every time.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+     </section>
+
+
+      {/* Benefits for Senders */}
+      <section  className="py-12 text-black px-6"> 
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold text-accent mb-8">Benefits for Senders</h2>
+            <div className="grid sm:grid-cols-3 gap-6">
+
+              {/* Card 1 */}
+              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                <img src={pic4} alt="Wide Network of Drivers" className="w-full h-40 object-cover" />
+                <div className="p-4">
+                  <h3 className="font-bold text-accent mb-2">Wide Network of Drivers</h3>
+                  <p className="text-gray-600">Reach verified, professional drivers nationwide.</p>
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                <img src={pic5} alt="Competitive Pricing" className="w-full h-40 object-cover" />
+                <div className="p-4">
+                  <h3 className="font-bold text-accent mb-2">Competitive Pricing</h3>
+                  <p className="text-gray-600">Get the best rates with transparent fees.</p>
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                <img src={pic6} alt="Real-Time Tracking" className="w-full h-40 object-cover" />
+                <div className="p-4">
+                  <h3 className="font-bold text-accent mb-2">Real-Time Tracking</h3>
+                  <p className="text-gray-600">Track every shipment from pickup to drop-off.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-12 px-6 bg-accent bg-rose-50 text-black text-center">
+        <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+        <p className="mb-6">Join StayFreight now to streamline your logistics and connect with shippers and carriers.</p>
+        <a href="/registre">
+        <button className="bg-ghos text-accent font-semibold px-6 py-2 rounded hover:bg-primary hover:bg-pinko  hover:text-white transition">
+          Get Started
+        </button>
+        </a>
+      </section>
+
+  
+    </div>
+    <Footer/>
     </>
   );
-}
+};
 
-export default home;
+
+export default HomePage;

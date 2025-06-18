@@ -2,23 +2,23 @@ import React from 'react';
 
 const Navbar = () => {
   return (
-    <nav className="bg-[#5E3A3A] px-6 py-3 shadow-sm flex justify-between items-center">
-      {/* Left */}
+    <nav className="bg-pinko px-6 py-3 shadow-sm flex justify-between items-center">
       <div className="flex items-center space-x-2">
         <span className="text-white font-bold text-lg">StayFreight</span>
       </div>
 
-      {/* Right */}
       <div className="flex items-center space-x-6">
-        <a href="#about" className="text-white hover:text-[#D8A7B1] font-medium transition">
+        <a href="#about" className="text-white hover:text-ghos font-medium transition">
           About
         </a>
-        <a href="#contact" className="text-white hover:text-[#D8A7B1] font-medium transition">
-          Contact
+        <a href="#How" className="text-white hover:text-ghos font-medium transition">
+          How it works
         </a>
-        <button className="bg-white text-[#5E3A3A] px-4 py-1.5 rounded-md shadow-sm hover:bg-[#D8A7B1] hover:text-white transition">
+        <a href="/login">
+        <button className="bg-white text-pinko px-4 py-1.5 rounded-md shadow-sm hover:bg-ghos hover:text-white transition">
           Log in
         </button>
+        </a>
       </div>
     </nav>
   );
