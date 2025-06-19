@@ -60,10 +60,22 @@ const register = async (req, res) => {
 // Edit profile route 
 const editProfile = async (req, res) => {
   try {
-    const { userId, username, email, number, emailChanged } = req.body;
+   
+    const { username, email, number, userId } = req.body;
     
-    if (!userId || !username || !email || !number) {
+    
+    if (!username || !email || !number) {
       return res.status(400).json({ message: 'Tous les champs sont requis' });
+    }
+    
+   
+    if (!userId) {
+      return res.status(400).json({ message: 'ID utilisateur requis' });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Format d\'email invalide' });
     }
     
     // Vérifier que l'utilisateur existe
@@ -72,7 +84,6 @@ const editProfile = async (req, res) => {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
     
-    // Vérifier si l'email a changé et s'il n'est pas déjà utilisé par un autre utilisateur
     if (email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser && existingUser._id.toString() !== userId) {
@@ -80,46 +91,45 @@ const editProfile = async (req, res) => {
       }
     }
     
-    // Mise à jour conditionnelle selon si l'email a changé
     const updateData = {
       username,
       number,
       email
     };
     
-    // Si l'email a changé, marquer comme non vérifié et envoyer un code de vérification
-    if (emailChanged && email !== user.email) {
-      updateData.isVerified = false;
-      
-      // Mettre à jour l'utilisateur avec le nouvel email non vérifié
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        updateData,
-        { new: true }
-      );
-      
-    } else {
-      // Mise à jour normale sans changement d'email ou sans besoin de vérification
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        updateData,
-        { new: true }
-      );
-      
-      return res.status(200).json({
-        message: 'Profil mis à jour avec succès',
-        user: {
-          id: updatedUser._id,
-          username: updatedUser.username,
-          email: updatedUser.email,
-          number: updatedUser.number,
-          isVerified: updatedUser.isVerified,
-          role: updatedUser.role
-        }
-      });
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { 
+        new: true, // Return the updated document
+        runValidators: true // Run mongoose validators
+      }
+    );
+    
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Erreur lors de la mise à jour' });
     }
+    
+    const { password, ...userWithoutPassword } = updatedUser.toObject();
+    
+    res.status(200).json({
+      message: 'Profil mis à jour avec succès',
+      user: userWithoutPassword
+    });
+    
   } catch (error) {
     console.error('Erreur lors de la mise à jour du profil:', error);
+    
+  
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'ID utilisateur invalide' });
+    }
+    
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ message: 'Erreurs de validation', errors });
+    }
+    
     res.status(500).json({ message: 'Erreur serveur, veuillez réessayer plus tard' });
   }
 };

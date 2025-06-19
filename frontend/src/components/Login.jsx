@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setToken } = useAuth();
+  const { login } = useAuth(); // Use login function instead of setToken
 
   const [formData, setFormData] = useState({
     email: '',
@@ -19,6 +19,7 @@ const Login = () => {
   });
 
   const [apiError, setApiError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const validateForm = () => {
     let isValid = true;
@@ -55,6 +56,7 @@ const Login = () => {
     e.preventDefault();
 
     if (validateForm()) {
+      setIsLoading(true);
       try {
         const response = await axios.post('http://localhost:3000/api/trans/login', formData, {
           headers: { 'Content-Type': 'application/json' }
@@ -62,18 +64,21 @@ const Login = () => {
 
         if (response.data.token) {
           const { token, user } = response.data;
-          localStorage.setItem('token', token);
+          
+          // Store user data and login with token
           localStorage.setItem('user', JSON.stringify(user));
-          setToken(token);
+          login(token); 
 
           toast.success('Connexion réussie', { duration: 2000 });
 
-          setTimeout(() => {
-            navigate('/home');
-          }, 3000);
+          navigate('/profile');
         }
       } catch (error) {
         setApiError(error.response?.data?.message || 'Erreur lors de la connexion');
+        console.log('the error is :', error);
+        toast.error('Erreur lors de la connexion');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -92,7 +97,8 @@ const Login = () => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none"
+            disabled={isLoading}
+            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none disabled:opacity-50"
           />
           {errors.email && <p className="text-sm text-red-500 mb-2">{errors.email}</p>}
 
@@ -102,19 +108,24 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="Password"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none"
+            disabled={isLoading}
+            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-pinko focus:outline-none disabled:opacity-50"
           />
           {errors.password && <p className="text-sm text-red-500 mb-2">{errors.password}</p>}
 
           {apiError && <p className="text-sm text-red-600 mb-4">{apiError}</p>}
 
-          <button type="submit" className="w-full py-3 bg-[#D8A7B1] text-white rounded-md hover:bg-pinko transition font-semibold">
-            Log in
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full py-3 bg-[#D8A7B1] text-white rounded-md hover:bg-pinko transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Connexion...' : 'Log in'}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-pinko">
-          Don’t have an account?{' '}
+          Don't have an account?{' '}
           <a href="/registre" className="text-[#D8A7B1] underline hover:text-pinko">
             Sign up
           </a>

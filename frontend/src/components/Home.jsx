@@ -50,7 +50,7 @@ const HomePage = () => {
         </p>
 
         <div className="grid sm:grid-cols-3 gap-6">
-          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+          <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
             <div className="w-full h-40 bg-blue-100 flex items-center justify-center">
               <Truck className="w-8 h-8 text-blue-600" />
             </div>
@@ -60,7 +60,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+          <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
             <div className="w-full h-40 bg-green-100 flex items-center justify-center">
               <MapPin className="w-8 h-8 text-green-600" />
             </div>
@@ -70,7 +70,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+          <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
             <div className="w-full h-40 bg-yellow-100 flex items-center justify-center">
               <DollarSign className="w-8 h-8 text-yellow-600" />
             </div>
@@ -90,7 +90,7 @@ const HomePage = () => {
           <div className="grid sm:grid-cols-3 gap-6">
             
             {/* Card 1 */}
-            <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+            <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
               <img src={pic1} alt="Maximize Earnings" className="w-full h-40 object-cover" />
               <div className="p-4">
                 <h3 className="font-bold text-accent mb-2">Maximize Earnings</h3>
@@ -99,7 +99,7 @@ const HomePage = () => {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white  text-black rounded-xl shadow-md overflow-hidden">
+            <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
               <img src={pic2} alt="Flexible Scheduling" className="w-full h-40 object-cover" />
               <div className="p-4">
                 <h3 className="font-bold text-accent mb-2">Flexible Scheduling</h3>
@@ -108,7 +108,7 @@ const HomePage = () => {
             </div>
 
             {/* Card 3 */}
-            <div className="bg-white text-black rounded-xl shadow-md overflow-hidden">
+            <div className="bg-pinko-10 text-black rounded-xl shadow-md overflow-hidden">
               <img src={pic3} alt="Reliable Payments" className="w-full h-40 object-cover" />
               <div className="p-4">
                 <h3 className="font-bold text-accent  mb-2">Reliable Payments</h3>
@@ -128,7 +128,7 @@ const HomePage = () => {
             <div className="grid sm:grid-cols-3 gap-6">
 
               {/* Card 1 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-pinko-10 rounded-xl shadow-md overflow-hidden">
                 <img src={pic4} alt="Wide Network of Drivers" className="w-full h-40 object-cover" />
                 <div className="p-4">
                   <h3 className="font-bold text-accent mb-2">Wide Network of Drivers</h3>
@@ -137,7 +137,7 @@ const HomePage = () => {
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-pinko-10 rounded-xl shadow-md overflow-hidden">
                 <img src={pic5} alt="Competitive Pricing" className="w-full h-40 object-cover" />
                 <div className="p-4">
                   <h3 className="font-bold text-accent mb-2">Competitive Pricing</h3>
@@ -146,7 +146,7 @@ const HomePage = () => {
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-pinko-10 rounded-xl shadow-md overflow-hidden">
                 <img src={pic6} alt="Real-Time Tracking" className="w-full h-40 object-cover" />
                 <div className="p-4">
                   <h3 className="font-bold text-accent mb-2">Real-Time Tracking</h3>

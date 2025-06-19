@@ -1,6 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
+import { useAuth } from '../provider/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+
 
 const Navbar = () => {
+   const { setToken } = useAuth();
+  const navigate = useNavigate();
+ 
+  
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setToken(null);
+    navigate("/");
+  };
   return (
     <nav className="bg-pinko px-6 py-3 shadow-sm flex justify-between items-center">
       <div className="flex items-center space-x-2">
@@ -19,6 +34,13 @@ const Navbar = () => {
           Log in
         </button>
         </a>
+         <button 
+         onClick={handleLogout}
+          className="bg-white text-pinko px-4 py-1.5 rounded-md shadow-sm hover:bg-ghos hover:text-white transition">
+          Log Out 
+        </button>
+
+
       </div>
     </nav>
   );
