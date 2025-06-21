@@ -1,5 +1,6 @@
 const Demande = require('../Models/Demande');
 const Annonce = require('../Models/Annonce');
+const { addHistorique } = require('./historiquecontroller'); 
 
 // Create demande 
 const createDemande = async (req, res) => {
@@ -11,6 +12,8 @@ const createDemande = async (req, res) => {
                 error: 'annonceId, colis et date sont requis' 
             });
         }
+
+
 
         // Validate colis array
         if (!Array.isArray(colis) || colis.length === 0) {
@@ -78,6 +81,16 @@ const createDemande = async (req, res) => {
             colis,
             date: new Date(date),
             statut: 'en attente'
+        });
+
+
+
+        await addHistorique({
+            userId: req.user._id,
+            typeUser : 'expediteur',
+            action: 'demande_envoyee',
+            demandeId: demande._id
+
         });
 
         const populatedDemande = await Demande.findById(demande._id)

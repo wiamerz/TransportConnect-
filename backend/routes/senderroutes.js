@@ -1,16 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { 
-    createDemande,
-    getAllDemandes,
-    getDemandesByAnnonce,
-    getShipperDemands,
-    getDriverDemands,
-    updateDemandeStatus,
-    updateDemande,
-    deleteDemande,
-    getDemandeById
-} = require('../controllers/demandecontroller');
+const { createDemande,getAllDemandes,getDemandesByAnnonce,getShipperDemands,getDriverDemands,updateDemandeStatus,updateDemande,deleteDemande,getDemandeById} = require('../controllers/demandecontroller');
 const authMiddleware = require('../middleware/authmiddle');
 const driverMiddleware = require('../middleware/drivermiddle');
 const adminMiddleware = require('../middleware/adminmiddle');

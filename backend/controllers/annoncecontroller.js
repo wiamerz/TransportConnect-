@@ -1,4 +1,6 @@
 const Annonce = require('../Models/Annonce'); 
+const { addHistorique } = require('./historiquecontroller'); 
+
 
 ///////////////////// Create annonce ////////////////////////////////
 const createAnnonce = async (req, res) => {
@@ -33,6 +35,13 @@ const createAnnonce = async (req, res) => {
             capacity: parseInt(capacity), 
             date: new Date(date)
         });
+
+        await addHistorique({
+            utilisateurId: req.user._id,
+            typeUtilisateur: 'conducteur',
+            action: 'trajet_cree',
+            annonceId: annonce._id
+         });
 
         console.log('✅ Annonce created successfully:', annonce._id);
 

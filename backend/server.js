@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authroutes');
 const annonceRoutes = require('./routes/conducteurRoutes');
 const demandeRoutes = require('./routes/senderroutes');
+const historiqueRoutes = require('./routes/historiqueroutes')
 
 
 const app = express();
@@ -23,6 +24,7 @@ connectDB();
 app.use('/api/trans', authRoutes);
 app.use('/api/annonces', annonceRoutes);
 app.use('/api/demandes', demandeRoutes);
+app.use('/api/historique', historiqueRoutes);
 
 // testing
 app.get('/health', (req, res) => {

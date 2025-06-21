@@ -7,4 +7,5 @@ router.post('/register', register);
 router.post('/login', login);
 router.put('/edit-profile', editProfile);
 
+
 module.exports = router;
