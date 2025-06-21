@@ -25,7 +25,7 @@ const createAnnonce = async (req, res) => {
             return res.status(401).json({ error: 'Utilisateur non authentifié' });
         }
 
-        console.log('✅ Creating annonce for user ID:', req.user._id);
+        console.log('Creating annonce for user ID:', req.user._id);
 
         // Create annonce
         const annonce = await Annonce.create({
@@ -50,7 +50,7 @@ const createAnnonce = async (req, res) => {
             annonce: annonce
         });
     } catch (err) {
-        console.error('❌ Error creating annonce:', err);
+        console.error('Error creating annonce:', err);
         res.status(500).json({ error: err.message });
     }
 }

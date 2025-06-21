@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authroutes');
 const annonceRoutes = require('./routes/conducteurRoutes');
 const demandeRoutes = require('./routes/senderroutes');
 const historiqueRoutes = require('./routes/historiqueroutes')
-
+const evalutionRoutes = require('./routes/evaluationroutes')
 
 const app = express();
 
@@ -25,6 +25,8 @@ app.use('/api/trans', authRoutes);
 app.use('/api/annonces', annonceRoutes);
 app.use('/api/demandes', demandeRoutes);
 app.use('/api/historique', historiqueRoutes);
+app.use('/api/evaluation', evalutionRoutes);
+
 
 // testing
 app.get('/health', (req, res) => {
