@@ -1,44 +1,39 @@
 const mongoose = require('mongoose');
 
-const demandeSchema  = new mongoose.Schema({
-   annonceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Annonce',
-      required: true,
-    },
-    expediteurId: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'User',
-       required: true,
-    },
-     colis: {
+const demandeSchema = new mongoose.Schema({
+  annonceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Annonce',
+    required: true,
+  },
+  expediteurId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  colis: [{
+    title: { type: String, required: true },
     dimensions: {
-      longueur: Number,
-      largeur: Number,
-      hauteur: Number,
+      length: { type: Number, required: true },
+      width: { type: Number, required: true },
+      height: { type: Number, required: true }
     },
-    poids: Number,
-    type: {
-      type: String,
-      enum: ['Documents', 'Électronique', 'Vêtements', 'Alimentaire', 'Meubles', 'Autre'],
-      required: true
-    }
-    },
-    statut: {
+    weight: { type: Number, required: true },
+    type: { type: String, required: [true, 'Le type de colis est requis'] }
+  }],
+  statut: {
     type: String,
     enum: ['en attente', 'acceptée', 'refusée', 'livrée'],
     default: 'en attente'
-    },
-    date: {
-      type: Date ,
-      required: [true, 'date is required'],
-      trim: true
-    },
-     dateCreation: {
+  },
+  date: {
+    type: Date,
+    required: [true, 'date is required'],
+  },
+  dateCreation: {
     type: Date,
     default: Date.now
   }
-  });
-  
-  
-  module.exports = mongoose.model('Demande', demandeSchema);  
+});
+
+module.exports = mongoose.model('Demande', demandeSchema);

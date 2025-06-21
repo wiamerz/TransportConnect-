@@ -27,10 +27,10 @@ const createAnnonce = async (req, res) => {
 
         // Create annonce
         const annonce = await Annonce.create({
-            conducteur: req.user._id, // Use _id instead of id
+            conducteur: req.user._id, 
             startPoint,
             intermidiateSteps: intermidiateSteps || [],
-            capacity: parseInt(capacity), // Ensure it's a number
+            capacity: parseInt(capacity), 
             date: new Date(date)
         });
 

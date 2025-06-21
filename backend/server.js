@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const connectDB = require('./config/db'); 
 const authRoutes = require('./routes/authroutes');
 const annonceRoutes = require('./routes/conducteurRoutes');
+const demandeRoutes = require('./routes/senderroutes');
+
 
 const app = express();
 
@@ -20,6 +22,7 @@ connectDB();
 // Routes
 app.use('/api/trans', authRoutes);
 app.use('/api/annonces', annonceRoutes);
+app.use('/api/demandes', demandeRoutes);
 
 // testing
 app.get('/health', (req, res) => {
