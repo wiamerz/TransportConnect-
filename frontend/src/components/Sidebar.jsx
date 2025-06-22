@@ -18,7 +18,7 @@ const Sidebar = () => {
     { id: 'annonces', icon: Tag, label: 'Annonces', href: '/annonces' },
     { id: 'evaluation', icon: MessageSquare, label: 'Evaluation', href: '/evaluation' },
     { id: 'demandes', icon: Package, label: 'Demandes', href: '/demandes' },
-    { id: 'history', icon: History, label: 'History', href: '/history' },
+    { id: 'history', icon: History, label: 'History', href: '/historique' },
   ];
 
   const handleItemClick = (itemId) => {

@@ -121,10 +121,11 @@ const Profile = () => {
   if (loading || !user) return <div className="text-center py-20 text-gray-600">Chargement...</div>;
 
   return (
-    <>
-    {/* <Sidebar/> */}
-    <div className="min-h-screen bg-[#FAF9F6]">
-      
+
+  <div className="flex min-h-screen bg-[#FAF9F6]">
+    <Sidebar /> {/* Sidebar on the left */}
+     <div className="flex-1">
+   
       <div className="bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
@@ -267,9 +268,8 @@ const Profile = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
-  </>
+  </div>
   );
 };
 

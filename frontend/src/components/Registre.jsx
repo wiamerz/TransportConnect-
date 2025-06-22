@@ -173,7 +173,7 @@ const Register = () => {
           {errors.confirmPassword && <p className="text-sm text-red-500 mb-2">{errors.confirmPassword}</p>}
 
           <div className="flex justify-between mb-2">
-            {['driver', 'sender', 'admin'].map((item) => (
+            {['conducteur', 'expediteur', 'admin'].map((item) => (
               <button
                 key={item}
                 type="button"

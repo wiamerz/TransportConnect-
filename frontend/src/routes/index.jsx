@@ -9,6 +9,7 @@ import Profile from "../components/Profile";
 import LoginForm from "../components/Login";
 import ConducteurDashbord from "../components/ConducteurDashbord";
 import Annonces from "../components/Annonces";
+import Historique from "../components/Historique"
 
 const Routes = () => {
   const { token } = useAuth();
@@ -41,6 +42,10 @@ const Routes = () => {
         {
           path: "/Annonces",
           element: <Annonces/>,
+        },
+        {
+          path: "/historique",
+          element: <Historique/>,
         },
       ],
     },

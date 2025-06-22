@@ -9,11 +9,13 @@ import pic4 from '../assets/sent.jpg';
 import pic5 from '../assets/send.jpg';
 import pic6 from '../assets/sender.jpg';
 import { Truck, MapPin, DollarSign } from 'lucide-react';
+import Sidebar from './Sidebar';
 
 const HomePage = () => {
   return (
     <>
-    <Navbar/>
+    {/* <Navbar/> */}
+    <Sidebar/>
     <div className="bg-white text-white font-sans">
 
       {/* Header Section */}
