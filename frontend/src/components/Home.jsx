@@ -25,7 +25,7 @@ const HomePage = () => {
           <p className="text-white mb-6">
             StayFreight simplifies load sourcing, booking, and delivery with real-time access to shipments.
           </p>
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <input
               type="text"
               placeholder="Search for loads"
@@ -34,7 +34,7 @@ const HomePage = () => {
             <button className="bg-primary bg-ghos text-gray-500 px-6 py-2 rounded-r-md hover:bg-accent transition">
               Search
             </button>
-          </div>
+          </div> */}
         </div>
       </header>
 

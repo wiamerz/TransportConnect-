@@ -8,9 +8,11 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
   Pencil, User, Mail, Phone, ChevronRight,
-  Briefcase, Bell, LogOut, Settings
+  Briefcase, Bell, LogOut, Settings,
+  
 } from 'lucide-react';
 import profile from '../assets/profile.jpg';
+import Sidebar from "./Sidebar";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -119,6 +121,8 @@ const Profile = () => {
   if (loading || !user) return <div className="text-center py-20 text-gray-600">Chargement...</div>;
 
   return (
+    <>
+    {/* <Sidebar/> */}
     <div className="min-h-screen bg-[#FAF9F6]">
       
       <div className="bg-white shadow-sm border-b border-gray-100">
@@ -265,6 +269,7 @@ const Profile = () => {
 
       <Footer />
     </div>
+  </>
   );
 };
 
@@ -279,6 +284,7 @@ const InfoCard = ({ label, value, sub, Icon }) => (
       {sub && <p className="text-sm text-gray-500">{sub}</p>}
     </div>
   </div>
+
 );
 
 const InputCard = ({ label, value, onChange, Icon }) => (
@@ -296,6 +302,7 @@ const InputCard = ({ label, value, onChange, Icon }) => (
       />
     </div>
   </div>
+
 );
 
 export default Profile;

@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
   const logout = () => {
     setToken(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("user"); // Also remove user data
+    localStorage.removeItem("user"); 
   };
 
   useEffect(() => {

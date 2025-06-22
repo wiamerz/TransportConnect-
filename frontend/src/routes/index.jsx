@@ -7,6 +7,8 @@ import Home from "../components/home";
 import RegistreForm from "../components/Registre";
 import Profile from "../components/Profile";
 import LoginForm from "../components/Login";
+import ConducteurDashbord from "../components/ConducteurDashbord";
+import Annonces from "../components/Annonces";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -31,6 +33,14 @@ const Routes = () => {
         {
           path: "/profile",
           element: <Profile />,
+        },
+        {
+          path: "/ConducteurDashbord",
+          element: <ConducteurDashbord />,
+        },
+        {
+          path: "/Annonces",
+          element: <Annonces/>,
         },
       ],
     },

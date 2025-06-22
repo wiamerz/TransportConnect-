@@ -71,7 +71,7 @@ const Login = () => {
 
           toast.success('Connexion réussie', { duration: 2000 });
 
-          navigate('/profile');
+          navigate('/ConducteurDashbord');
         }
       } catch (error) {
         setApiError(error.response?.data?.message || 'Erreur lors de la connexion');
