@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Users, User, Phone, Mail, Navigation, Menu, X, Plus } from 'lucide-react';
+import { Calendar, MapPin, Users, User, Phone, Mail, Navigation, Menu, X, Plus, Pencil, Trash } from 'lucide-react';
 import Sidebar from './Sidebar';
 import toast from 'react-hot-toast';
 
@@ -8,6 +8,8 @@ function Annonces() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updateModelOpen, setUpdateModelOpen] = useState(false);
+  const [currentAnnoceId, setCurrentAnnoceId] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [formAnnonce, setFormAnnonce] = useState({
     startPoint: '',
@@ -66,61 +68,57 @@ function Annonces() {
     }
   };
 
-
-const handleAddAnnonce = async () => {
-  if (!validateForm()) {
-    toast.error("Veuillez remplir tous les champs requis");
-    return;
-  }
-
-  try {
-   
-    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-    
-    if (!token) {
-      toast.error("Vous devez être connecté pour créer une annonce");
+  const handleAddAnnonce = async () => {
+    if (!validateForm()) {
+      toast.error("Veuillez remplir tous les champs requis");
       return;
     }
 
-    const response = await fetch('http://localhost:3000/api/annonces/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-      },
-      body: JSON.stringify({
-        startPoint: formAnnonce.startPoint,
-        intermidiateSteps: formAnnonce.intermidiateSteps.split(',').map(step => step.trim()).filter(step => step),
-        capacity: parseInt(formAnnonce.capacity),
-        date: formAnnonce.date
-      })
-    });
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      
+      if (!token) {
+        toast.error("Vous devez être connecté pour créer une annonce");
+        return;
+      }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Impossible d'ajouter l'annonce");
+      const response = await fetch('http://localhost:3000/api/annonces/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          startPoint: formAnnonce.startPoint,
+          intermidiateSteps: formAnnonce.intermidiateSteps.split(',').map(step => step.trim()).filter(step => step),
+          capacity: parseInt(formAnnonce.capacity),
+          date: formAnnonce.date
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Impossible d'ajouter l'annonce");
+      }
+
+      const result = await response.json();
+      toast.success("Annonce ajoutée avec succès!");
+      
+      setFormAnnonce({
+        startPoint: '',
+        intermidiateSteps: '',
+        capacity: '',
+        date: ''
+      });
+      setIsModalOpen(false);
+      
+      fetchAnnonces();
+      
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error(error.message || "Erreur lors de l'ajout de l'annonce");
     }
-
-    const result = await response.json();
-    toast.success("Annonce ajoutée avec succès!");
-    
-   
-    setFormAnnonce({
-      startPoint: '',
-      intermidiateSteps: '',
-      capacity: '',
-      date: ''
-    });
-    setIsModalOpen(false);
-    
-    
-    fetchAnnonces();
-    
-  } catch (error) {
-    console.error('Erreur:', error);
-    toast.error(error.message || "Erreur lors de l'ajout de l'annonce");
-  }
-};
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -141,6 +139,107 @@ const handleAddAnnonce = async () => {
       month: '2-digit',
       year: 'numeric'
     });
+  };
+
+  const modelUpdate = (annonce) => {
+    setCurrentAnnoceId(annonce._id);
+    setFormAnnonce({
+      startPoint: annonce.startPoint,
+      intermidiateSteps: annonce.intermidiateSteps ? annonce.intermidiateSteps.join(', ') : '',
+      capacity: annonce.capacity.toString(),
+      date: new Date(annonce.date).toISOString().slice(0, 16)
+    });
+    setUpdateModelOpen(true);
+  };
+
+  const handleUpdateAnnonce = async () => {
+    if (!validateForm()) {
+      toast.error("Veuillez remplir tous les champs requis");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      
+      if (!token) {
+        toast.error("Vous devez être connecté pour modifier une annonce");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/annonces/${currentAnnoceId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          startPoint: formAnnonce.startPoint,
+          intermidiateSteps: formAnnonce.intermidiateSteps.split(',').map(step => step.trim()).filter(step => step),
+          capacity: parseInt(formAnnonce.capacity),
+          date: formAnnonce.date
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Impossible de modifier l'annonce");
+      }
+
+      const result = await response.json();
+      toast.success("Annonce modifiée avec succès!");
+      
+      setFormAnnonce({
+        startPoint: '',
+        intermidiateSteps: '',
+        capacity: '',
+        date: ''
+      });
+      setUpdateModelOpen(false);
+      setCurrentAnnoceId(null);
+      
+      fetchAnnonces();
+      
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error(error.message || "Erreur lors de la modification de l'annonce");
+    }
+  };
+
+  const handleDeleteAnnonce = async (annoceId) => {
+    // if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette annonce ?")) {
+    //   return;
+    // }
+
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      
+      if (!token) {
+        toast.error("Vous devez être connecté pour supprimer une annonce");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/annonces/${annoceId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Impossible de supprimer l'annonce");
+      }
+
+      const result = await response.json();
+      toast.success("Annonce supprimée avec succès!");
+      
+      fetchAnnonces();
+      
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error(error.message || "Erreur lors de la suppression de l'annonce");
+    }
   };
 
   // Loading Page
@@ -233,7 +332,7 @@ const handleAddAnnonce = async () => {
             </div>
           </div>
 
-          {/* Add carte */}
+          {/* Add Modal */}
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
@@ -315,6 +414,105 @@ const handleAddAnnonce = async () => {
             </div>
           )}
 
+          {/* Update Modal */}
+          {updateModelOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-pinko)' }}>
+                    Modifier l'annonce
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setUpdateModelOpen(false);
+                      setCurrentAnnoceId(null);
+                      setFormAnnonce({
+                        startPoint: '',
+                        intermidiateSteps: '',
+                        capacity: '',
+                        date: ''
+                      });
+                    }}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <input 
+                      type="text" 
+                      placeholder="Point de départ"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-sm md:text-base"
+                      style={{ '--tw-ring-color': 'var(--color-pinko)' }}
+                      value={formAnnonce.startPoint}
+                      onChange={(e) => handleInputChange('startPoint', e.target.value)}
+                    />
+                    {formErrors.startPoint && (
+                      <p className="text-red-500 text-sm mt-1">{formErrors.startPoint}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input 
+                      type="text" 
+                      placeholder="Étapes intermédiaires (séparées par des virgules)"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-sm md:text-base"
+                      style={{ '--tw-ring-color': 'var(--color-pinko)' }}
+                      value={formAnnonce.intermidiateSteps}
+                      onChange={(e) => handleInputChange('intermidiateSteps', e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <input 
+                      type="number" 
+                      placeholder="Capacité (nombre de places)"
+                      min="1"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-sm md:text-base"
+                      style={{ '--tw-ring-color': 'var(--color-pinko)' }}
+                      value={formAnnonce.capacity}
+                      onChange={(e) => handleInputChange('capacity', e.target.value)}
+                    />
+                    {formErrors.capacity && (
+                      <p className="text-red-500 text-sm mt-1">{formErrors.capacity}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input 
+                      type="datetime-local"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-sm md:text-base"
+                      style={{ '--tw-ring-color': 'var(--color-pinko)' }}
+                      value={formAnnonce.date}
+                      onChange={(e) => handleInputChange('date', e.target.value)}
+                    />
+                    {formErrors.date && (
+                      <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={handleUpdateAnnonce}
+                      className="flex-1 py-3 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                      style={{ backgroundColor: 'var(--color-pinko)' }}
+                    >
+                      Modifier
+                    </button>
+                    {/* <button
+                      onClick={() => handleDeleteAnnonce(currentAnnoceId)}
+                      className="flex-1 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
+                    >
+                      cancel
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Content */}
           <div className="p-4 md:p-6">
             {annonces.length === 0 ? (
@@ -341,11 +539,27 @@ const handleAddAnnonce = async () => {
                         <div className="flex items-center space-x-2">
                           <User className="w-4 h-4 md:w-5 md:h-5" />
                           <span className="font-semibold text-sm md:text-base">
-                            {annonce.conducteur.username}
+                            {annonce.conducteur?.username || 'Utilisateur'}
                           </span>
                         </div>
-                        <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
-                          Créé le {formatDateCreation(annonce.dateCreation)}
+                        <div className="flex items-center space-x-2">
+                          <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                            Créé le {formatDateCreation(annonce.dateCreation)}
+                          </div>
+                          <button 
+                            onClick={() => modelUpdate(annonce)}
+                            className="p-1 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                            title="Modifier l'annonce"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteAnnonce(annonce._id)}
+                            className="p-1 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+                            title="Supprimer l'annonce"
+                          >
+                            <Trash className="w-3 h-3" />
+                          </button>
                         </div>
                       </div>
                       
@@ -414,9 +628,9 @@ const handleAddAnnonce = async () => {
                         <div className="space-y-1">
                           <div className="flex items-center space-x-2 text-xs md:text-sm text-gray-600">
                             <Mail className="w-3 h-3" />
-                            <span className="truncate">{annonce.conducteur.email}</span>
+                            <span className="truncate">{annonce.conducteur?.email || 'Email non disponible'}</span>
                           </div>
-                          {annonce.conducteur.number && (
+                          {annonce.conducteur?.number && (
                             <div className="flex items-center space-x-2 text-xs md:text-sm text-gray-600">
                               <Phone className="w-3 h-3" />
                               <span>{annonce.conducteur.number}</span>
