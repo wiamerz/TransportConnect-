@@ -3,11 +3,11 @@ import { useAuth } from "../provider/AuthProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
 import RedirectIfAuth from "./RedirectIfAuth";
 
-import Home from "../components/home";
+import Home from "../components/Home";
 import RegistreForm from "../components/Registre";
 import Profile from "../components/Profile";
 import LoginForm from "../components/Login";
-import ConducteurDashbord from "../components/ConducteurDashbord";
+import ConducteurDashbord from "../components/Dashbord";
 import Annonces from "../components/Annonces";
 import Historique from "../components/Historique"
 
@@ -18,14 +18,13 @@ const Routes = () => {
     // Root redirect based on auth
     {
       path: "/",
-      element: token ? <Navigate to="/profile" replace /> : <Navigate to="/home" replace />,
+      element: token ? <Navigate to="/profile" replace /> : <Navigate to="/conducteurDashbord" replace />,
     },
 
     // Public route accessible to everyone (even if logged in)
-    {
-      path: "/home",
-      element: <Home />,
-    },
+    
+
+
 
     // Protected Routes (only if authenticated)
     {
@@ -62,6 +61,10 @@ const Routes = () => {
           path: "/registre",
           element: <RegistreForm />,
         },
+        {
+      path: "/home",
+      element: <Home />,
+    }
       ],
     },
 

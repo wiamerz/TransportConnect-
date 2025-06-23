@@ -14,8 +14,7 @@ import Sidebar from './Sidebar';
 const HomePage = () => {
   return (
     <>
-    {/* <Navbar/> */}
-    <Sidebar/>
+    <Navbar/>
     <div className="bg-white text-white font-sans">
 
       {/* Header Section */}

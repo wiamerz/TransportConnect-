@@ -5,6 +5,10 @@
   --color-pinko: #5E3A3A;
   --color-pinko-10 : #FAF9F6;
 }
+.input-style {
+  @apply w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none;
+}
+
 
 
 

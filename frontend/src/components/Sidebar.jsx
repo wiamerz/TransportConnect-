@@ -52,6 +52,7 @@ const Sidebar = () => {
           transform transition-transform duration-300 ease-in-out
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
+          shadow-lg
         `}
         style={{ backgroundColor: '#FAF9F6' }}
       >
@@ -60,75 +61,39 @@ const Sidebar = () => {
           <h1 className="text-xl font-semibold text-gray-800">StayFreight</h1>
         </div>
 
-        {/* Navigation Menu */}
+        {/* Navigation */}
         <nav className="flex-1 px-4 py-6 overflow-y-auto">
           <ul className="space-y-2">
-            {menuItems.map((item) => {
-              const IconComponent = item.icon;
-              return (
-                <li key={item.id}>
-                  <a href={item.href}>
-                    <button
-                      onClick={() => handleItemClick(item.id)}
-                      className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ${
-                        activeItem === item.id
-                          ? 'text-white'
-                          : 'text-gray-600 hover:text-white'
-                      }`}
-                      style={{
-                        backgroundColor: activeItem === item.id ? '#5E3A3A' : 'transparent',
-                        ...(activeItem !== item.id && {
-                          ':hover': { backgroundColor: '#D8A7B1' }
-                        })
-                      }}
-                      onMouseEnter={(e) => {
-                        if (activeItem !== item.id) {
-                          e.target.style.backgroundColor = '#D8A7B1';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (activeItem !== item.id) {
-                          e.target.style.backgroundColor = 'transparent';
-                        }
-                      }}
-                    >
-                      <IconComponent className="w-5 h-5 mr-3 flex-shrink-0" />
-                      <span className="font-medium">{item.label}</span>
-                    </button>
-                  </a>
-                </li>
-              );
-            })}
+            {menuItems.map(({ id, icon: Icon, label, href }) => (
+              <li key={id}>
+                <a
+                  href={href}
+                  onClick={() => handleItemClick(id)}
+                  className={`
+                    w-full flex items-center px-4 py-3 rounded-lg transition-colors
+                    ${activeItem === id ? 'bg-[#5E3A3A] text-white' : 'text-gray-600 hover:bg-[#D8A7B1] hover:text-white'}
+                  `}
+                >
+                  <Icon className="w-5 h-5 mr-3 flex-shrink-0" />
+                  <span className="font-medium">{label}</span>
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
 
-        {/* Profile Section */}
+        {/* Profile */}
         <div className="p-4 border-t border-gray-200">
-          <a href="/profile">
-            <button
-              onClick={() => handleItemClick('profile')}
-              className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ${
-                activeItem === 'profile'
-                  ? 'text-white'
-                  : 'text-gray-600 hover:text-white'
-              }`}
-              style={{
-                backgroundColor: activeItem === 'profile' ? '#5E3A3A' : 'transparent'
-              }}
-              onMouseEnter={(e) => {
-                if (activeItem !== 'profile') {
-                  e.target.style.backgroundColor = '#D8A7B1';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeItem !== 'profile') {
-                  e.target.style.backgroundColor = 'transparent';
-                }
-              }}
-            >
-              <User className="w-5 h-5 mr-3 flex-shrink-0" />
-              <span className="font-medium">Profile</span>
-            </button>
+          <a
+            href="/profile"
+            onClick={() => handleItemClick('profile')}
+            className={`
+              w-full flex items-center px-4 py-3 rounded-lg transition-colors
+              ${activeItem === 'profile' ? 'bg-[#5E3A3A] text-white' : 'text-gray-600 hover:bg-[#D8A7B1] hover:text-white'}
+            `}
+          >
+            <User className="w-5 h-5 mr-3 flex-shrink-0" />
+            <span className="font-medium">Profile</span>
           </a>
         </div>
       </div>

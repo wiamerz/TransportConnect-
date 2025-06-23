@@ -11,7 +11,7 @@ const createAnnonce = async (req, res) => {
         
         const { startPoint, intermidiateSteps, capacity, date } = req.body;
         
-        // Validate required fields
+        
         if (!startPoint || !capacity || !date) {
             console.log('Missing required fields');
             return res.status(400).json({ 
@@ -19,7 +19,6 @@ const createAnnonce = async (req, res) => {
             });
         }
 
-        // Validate user
         if (!req.user || !req.user._id) {
             console.log('No user in request');
             return res.status(401).json({ error: 'Utilisateur non authentifié' });
@@ -43,7 +42,7 @@ const createAnnonce = async (req, res) => {
             annonceId: annonce._id
          });
 
-        console.log('✅ Annonce created successfully:', annonce._id);
+        console.log('Annonce created successfully:', annonce._id);
 
         res.status(201).json({
             message: 'Annonce créée avec succès',
@@ -160,11 +159,4 @@ const deleteAnnonce = async (req, res) => {
     }
 }
 
-module.exports = { 
-    createAnnonce, 
-    getAllAnnonces, 
-    getAnnonceById, 
-    getAnnoncesByDriver, 
-    updateAnnonce, 
-    deleteAnnonce 
-};
+module.exports = { createAnnonce, getAllAnnonces, getAnnonceById, getAnnoncesByDriver, updateAnnonce, deleteAnnonce };

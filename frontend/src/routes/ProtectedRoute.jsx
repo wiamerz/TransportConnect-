@@ -5,7 +5,7 @@ export const ProtectedRoute = () => {
   const { token } = useAuth();
   
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   // If token exists, render the protected content

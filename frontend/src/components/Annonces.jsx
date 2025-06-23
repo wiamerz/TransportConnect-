@@ -4,6 +4,21 @@ import Sidebar from './Sidebar';
 import toast from 'react-hot-toast';
 
 function Annonces() {
+ const [currentUser, setCurrentUser] = useState(null);
+ const [isSubmitting, setIsSubmitting] = useState(false);
+ const [annonceId, setAnnonceId] = useState(null);
+  const [userRole, setUserRole] = useState(null); 
+  const [demandeModalOpen, setDemandeModalOpen] = useState(false);
+  const [selectedAnnonce, setSelectedAnnonce] = useState(null);
+  const [demandeForm, setDemandeForm] = useState({
+    colis: [{
+      title: '',
+      dimensions: { length: '', width: '', height: '' },
+      weight: '',
+      type: ''
+    }],
+    date: ''
+  });
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +36,29 @@ function Annonces() {
   useEffect(() => {
     fetchAnnonces();
   }, []);
+
+
+  useEffect(() => {
+  const fetchCurrentUser = async () => {
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    if (token) {
+      try {
+       
+        const response = await fetch('http://localhost:3000/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const userData = await response.json();
+        setCurrentUser(userData);
+      } catch (err) {
+        console.error("Failed to fetch user data:", err);
+      }
+    }
+  };
+
+  fetchCurrentUser();
+}, []);
 
   const fetchAnnonces = async () => {
     try {
@@ -42,8 +80,7 @@ function Annonces() {
       setLoading(false);
     }
   };
-
-  const validateForm = () => {
+const validateForm = () => {
     const errors = {};
     
     if (!formAnnonce.startPoint.trim()) {
@@ -242,6 +279,100 @@ function Annonces() {
     }
   };
 
+
+
+
+
+  const handleDemandeSubmit = async () => {
+  setIsSubmitting(true);
+  setError('');
+
+  // Validation (existing code remains the same)
+  if (!demandeForm.date) {
+    setError('La date est requise');
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    if (!token || !currentUser) {
+      throw new Error("Vous devez être connecté pour créer une demande");
+    }
+
+    const response = await fetch('http://localhost:3000/api/demandes/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        annonceId,
+        utilisateurId: currentUser._id,      
+        typeUtilisateur: "expediteur",      
+        date: demandeForm.date,
+        colis: demandeForm.colis.map(colis => ({
+          ...colis,
+          weight: parseFloat(colis.weight),
+          dimensions: {
+            length: parseFloat(colis.dimensions.length),
+            width: parseFloat(colis.dimensions.width),
+            height: parseFloat(colis.dimensions.height)
+          }
+        }))
+      })
+    });
+
+    // Rest of the function remains the same
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Erreur lors de la création de la demande");
+    }
+
+    toast.success("Demande créée avec succès!");
+    setDemandeModalOpen(false);
+    // Reset form...
+  } catch (error) {
+    console.error('Erreur:', error);
+    toast.error(error.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+const handleColisChange = (index, field, value) => {
+  const updatedColis = [...demandeForm.colis];
+  updatedColis[index][field] = value;
+  setDemandeForm({ ...demandeForm, colis: updatedColis });
+};
+
+const handleDimensionsChange = (index, dimension, value) => {
+  const updatedColis = [...demandeForm.colis];
+  updatedColis[index].dimensions[dimension] = value;
+  setDemandeForm({ ...demandeForm, colis: updatedColis });
+};
+
+const addColis = () => {
+  setDemandeForm({
+    ...demandeForm,
+    colis: [
+      ...demandeForm.colis,
+      {
+        title: '',
+        dimensions: { length: '', width: '', height: '' },
+        weight: '',
+        type: ''
+      }
+    ]
+  });
+};
+
+const removeColis = (index) => {
+  const updatedColis = demandeForm.colis.filter((_, i) => i !== index);
+  setDemandeForm({ ...demandeForm, colis: updatedColis });
+};
+
+
   // Loading Page
   if (loading) {
     return (
@@ -334,7 +465,7 @@ function Annonces() {
 
           {/* Add Modal */}
           {isModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-pinko)' }}>
@@ -416,7 +547,7 @@ function Annonces() {
 
           {/* Update Modal */}
           {updateModelOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-pinko)' }}>
@@ -638,6 +769,156 @@ function Annonces() {
                           )}
                         </div>
                       </div>
+
+                      {/* Only show "Faire une demande" if current user is not the conducteur */}
+                      {currentUser && currentUser._id !== annonce.conducteur?._id && (
+                        <button
+                          onClick={() => {
+                            setAnnonceId(annonce._id);
+                            setDemandeModalOpen(true);
+                          }}
+                          className="w-full mt-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                          style={{ backgroundColor: 'var(--color-pinko)' }}
+                        >
+                          Faire une demande
+                        </button>
+                      )}
+
+                    {/* Demande Modal */}
+                      {demandeModalOpen && (
+                        <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50 p-4">
+                          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-4">
+                              <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-pinko)' }}>
+                                Créer une demande
+                              </h2>
+                              <button
+                                onClick={() => setDemandeModalOpen(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                              >
+                                <X className="w-6 h-6" />
+                              </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Date de livraison</label>
+                                <input 
+                                  type="datetime-local"
+                                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent text-sm md:text-base"
+                                  style={{ '--tw-ring-color': 'var(--color-pinko)' }}
+                                  value={demandeForm.date}
+                                  onChange={(e) => setDemandeForm({...demandeForm, date: e.target.value})}
+                                />
+                              </div>
+
+                              {demandeForm.colis.map((colis, index) => (
+                                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <h3 className="font-medium">Colis {index + 1}</h3>
+                                    {index > 0 && (
+                                      <button 
+                                        onClick={() => removeColis(index)}
+                                        className="text-red-500 hover:text-red-700 text-sm"
+                                      >
+                                        Supprimer
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div className="space-y-3">
+                                    <div>
+                                      <input 
+                                        type="text"
+                                        placeholder="Titre du colis"
+                                        className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                        value={colis.title}
+                                        onChange={(e) => handleColisChange(index, 'title', e.target.value)}
+                                      />
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-2">
+                                      <div>
+                                        <input 
+                                          type="number"
+                                          placeholder="Longueur (cm)"
+                                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                          value={colis.dimensions.length}
+                                          onChange={(e) => handleDimensionsChange(index, 'length', e.target.value)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <input 
+                                          type="number"
+                                          placeholder="Largeur (cm)"
+                                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                          value={colis.dimensions.width}
+                                          onChange={(e) => handleDimensionsChange(index, 'width', e.target.value)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <input 
+                                          type="number"
+                                          placeholder="Hauteur (cm)"
+                                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                          value={colis.dimensions.height}
+                                          onChange={(e) => handleDimensionsChange(index, 'height', e.target.value)}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <input 
+                                          type="number"
+                                          placeholder="Poids (kg)"
+                                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                          value={colis.weight}
+                                          onChange={(e) => handleColisChange(index, 'weight', e.target.value)}
+                                        />
+                                      </div>
+                                      <div>
+                                        <select
+                                          className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                                          value={colis.type}
+                                          onChange={(e) => handleColisChange(index, 'type', e.target.value)}
+                                        >
+                                          <option value="">Type de colis</option>
+                                          <option value="fragile">Fragile</option>
+                                          <option value="normal">Normal</option>
+                                          <option value="lourd">Lourd</option>
+                                          <option value="grand">Grand volume</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              <button
+                                onClick={addColis}
+                                className="flex items-center justify-center w-full py-2 text-sm border border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
+                              >
+                                <Plus className="w-4 h-4 mr-1" />
+                                Ajouter un colis
+                              </button>
+
+                              {error && (
+                                <div className="text-red-500 text-sm text-center">{error}</div>
+                              )}
+
+                              <button
+                                onClick={handleDemandeSubmit}
+                                disabled={isSubmitting}
+                                className="w-full py-3 text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-70"
+                                style={{ backgroundColor: 'var(--color-pinko)' }}
+                              >
+                                {isSubmitting ? 'Envoi en cours...' : 'Créer la demande'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

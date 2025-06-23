@@ -4,7 +4,7 @@ import { useAuth } from '../provider/AuthProvider';
 const RedirectIfAuth = () => {
   const { token } = useAuth();
 
-  return token ? <Navigate to="/login" /> : <Outlet />;
+  return token ? <Navigate to="/conducteurDashbord" /> : <Outlet />;
 };
 
 export default RedirectIfAuth;

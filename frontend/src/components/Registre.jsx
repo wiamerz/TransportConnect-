@@ -1,116 +1,64 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../provider/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+const schema = yup.object().shape({
+  username: yup.string().required('Ce champ est obligatoire'),
+  email: yup.string().required('Ce champ est obligatoire').email('Format d\'email invalide'),
+  number: yup.string().required('Ce champ est obligatoire').matches(/^\+?[0-9]{10,15}$/, 'Numéro de téléphone invalide'),
+  password: yup.string().required('Ce champ est obligatoire').min(6, 'Au moins 6 caractères requis'),
+  confirmPassword: yup.string().required('Ce champ est obligatoire').oneOf([yup.ref('password'), null], 'Les mots de passe ne correspondent pas'),
+  role: yup.string().required('Veuillez choisir un rôle'),
+});
 
 const Register = () => {
   const { setToken } = useAuth();
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    number: '',
-    role: '',
-  });
-
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const phoneRegex = /^\+?[0-9]{10,15}$/;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const validateForm = () => {
-    const newErrors = {};
-    let isValid = true;
+  const selectedRole = watch('role');
 
-    if (!formData.username.trim()) {
-      newErrors.username = 'Ce champ est obligatoire';
-      isValid = false;
-    }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Ce champ est obligatoire';
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Format d\'email invalide';
-      isValid = false;
-    }
+  useEffect(() => {
+    register('role');
+  }, [register]);
 
-    if (!formData.number.trim()) {
-      newErrors.number = 'Ce champ est obligatoire';
-      isValid = false;
-    } else if (!phoneRegex.test(formData.number)) {
-      newErrors.number = 'Numéro de téléphone invalide';
-      isValid = false;
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Ce champ est obligatoire';
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Au moins 6 caractères requis';
-      isValid = false;
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Ce champ est obligatoire';
-      isValid = false;
-    } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
-      isValid = false;
-    }
-
-    if (!formData.role) {
-      newErrors.role = 'Veuillez choisir un rôle';
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRoleSelect = (role) => {
-    setFormData((prev) => ({ ...prev, role }));
-    setErrors((prev) => ({ ...prev, role: '' }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     if (loading) return;
+    setLoading(true);
 
-    if (validateForm()) {
-      setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:3000/api/trans/register', data, {
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-      try {
-        const response = await axios.post('http://localhost:3000/api/trans/register', formData, {
-          headers: { 'Content-Type': 'application/json' },
+      if (response.status === 201) {
+        toast.success('Inscription réussie ! Vérifiez votre email.');
+        navigate('/login', {
+          state: { email: data.email },
+          search: `?email=${encodeURIComponent(data.email)}`
         });
-
-        if (response.status === 201) {
-          toast.success('Inscription réussie ! Vérifiez votre email.', { duration: 3000 });
-
-          setTimeout(() => {
-            navigate('/login', {
-              state: { email: formData.email },
-              search: `?email=${encodeURIComponent(formData.email)}`
-            });
-          }, 1000);
-        }
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || 'Erreur lors de l\'inscription';
-        toast.error(errorMessage);
-        setErrors({ ...errors, general: errorMessage });
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Erreur lors de l\'inscription';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,65 +69,45 @@ const Register = () => {
           Get started with StayFreight
         </h2>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Nom complet"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
-          />
-          {errors.username && <p className="text-sm text-red-500 mb-2">{errors.username}</p>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input 
+          {...register('username')} 
+          placeholder="Nom complet" 
+          className="input-style" />
+          {errors.username && <p className="text-sm text-red-500 mb-2">{errors.username.message}</p>}
 
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
-          />
-          {errors.email && <p className="text-sm text-red-500 mb-2">{errors.email}</p>}
+          <input 
+          {...register('email')} 
+          placeholder="Email" 
+          className="input-style" />
+          {errors.email && <p className="text-sm text-red-500 mb-2">{errors.email.message}</p>}
 
-          <input
-            type="text"
-            name="number"
-            value={formData.number}
-            onChange={handleChange}
-            placeholder="Téléphone"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
-          />
-          {errors.number && <p className="text-sm text-red-500 mb-2">{errors.number}</p>}
+          <input 
+          {...register('number')} 
+          placeholder="Téléphone" 
+          className="input-style" />
+          {errors.number && <p className="text-sm text-red-500 mb-2">{errors.number.message}</p>}
 
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Mot de passe"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
-          />
-          {errors.password && <p className="text-sm text-red-500 mb-2">{errors.password}</p>}
+          <input 
+          type="password" {...register('password')} 
+          placeholder="Mot de passe" 
+          className="input-style" />
+          {errors.password && <p className="text-sm text-red-500 mb-2">{errors.password.message}</p>}
 
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Confirmer mot de passe"
-            className="w-full mb-2 px-4 py-3 bg-[#F5EDED] border border-[#D8A7B1] rounded-md placeholder:text-[#5E3A3A] focus:outline-none"
-          />
-          {errors.confirmPassword && <p className="text-sm text-red-500 mb-2">{errors.confirmPassword}</p>}
+          <input 
+          type="password" {...register('confirmPassword')} 
+          placeholder="Confirmer mot de passe" 
+          className="input-style" />
+          {errors.confirmPassword && <p className="text-sm text-red-500 mb-2">{errors.confirmPassword.message}</p>}
 
           <div className="flex justify-between mb-2">
-            {['conducteur', 'expediteur', 'admin'].map((item) => (
+            {['conducteur', 'expediteur'].map((item) => (
               <button
                 key={item}
                 type="button"
-                onClick={() => handleRoleSelect(item)}
+                onClick={() => setValue('role', item)}
                 className={`w-full mx-1 py-2 rounded-md border text-sm transition ${
-                  formData.role === item
+                  selectedRole === item
                     ? 'bg-[#D8A7B1] text-white border-[#D8A7B1]'
                     : 'bg-white text-[#5E3A3A] border-[#D8A7B1] hover:bg-[#f9e3e8]'
                 }`}
@@ -188,9 +116,7 @@ const Register = () => {
               </button>
             ))}
           </div>
-          {errors.role && <p className="text-sm text-red-500 mb-4">{errors.role}</p>}
-
-          {errors.general && <p className="text-sm text-red-500 mb-4">{errors.general}</p>}
+          {errors.role && <p className="text-sm text-red-500 mb-4">{errors.role.message}</p>}
 
           <button
             type="submit"
@@ -203,9 +129,7 @@ const Register = () => {
 
         <p className="mt-4 text-center text-sm text-[#5E3A3A]">
           Vous avez déjà un compte ?{' '}
-          <a href="/login" className="text-[#D8A7B1] underline hover:text-[#5E3A3A]">
-            Se connecter
-          </a>
+          <a href="/login" className="text-[#D8A7B1] underline hover:text-[#5E3A3A]">Se connecter</a>
         </p>
       </div>
     </div>
